@@ -70,6 +70,71 @@ svg{
 <script src="js/d3.v3.min.js"></script>
 <script>
 
+
+    
+var width = 1600,
+    height = 800;
+    
+var nflRadius = 400,
+    nflNodesNum = 32;
+  
+
+for(var i=0; i<nflNodesNum; i++) {
+    nflNodeSegmentWidth = 2 * Math.PI / nflNodesNum,
+    nflNodesId = d3.range(0, nflNodesNum),
+    nflNodesRadians = [],    
+    nflNodesX = [],    
+    nflNodesY = []; 
+    nflNodesRadians[i] = nflNodesId[i] * nflNodeSegmentWidth;
+    nflNodesX[i] = Math.cos(nflNodesRadians[i]);
+    nflNodesY[i] = Math.sin(nflNodesRadians[i]);
+}       
+    
+var nflNodes = [nflNodesId, nflNodesRadians, nflNodesX, nflNodesY]  
+
+var svg = d3.select("body").append("svg")
+	    .attr("width", width)
+	    .attr("height", height);
+    
+var nflGraph = svg.append('g')
+		.attr('id','nfl-graph')
+
+    
+    
+    
+    
+   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
 var radians = 0.0174532925, 
 	clockRadius = 300,
 	margin = 50,
@@ -88,28 +153,14 @@ var radians = 0.0174532925,
     hourLabelRadius = clockRadius - 40
     hourLabelYOffset = 7;
 
-   
-    
-var   nflNodesNum = 32;
-var   nflNodeSegmentWidth = 2 * Math.PI / nflNodesNum;
 
-var   nflNodesId = d3.range(0, nflNodesNum);
-    
-var nflNodesRadians = []    
-var nflNodesX = []    
-var nflNodesY = []   
-
-for(var i=0; i<nflNodesNum; i++) {
-    nflNodesRadians[i] = nflNodesId[i] * nflNodeSegmentWidth;
-    nflNodesX[i] = Math.cos(nflNodesRadians[i]);
-    nflNodesY[i] = Math.sin(nflNodesRadians[i]);
-
-}    
     
     
-var nflNodes = [nflNodesId, nflNodesRadians, nflNodesX, nflNodesY]  
-
-var nflNodes3=s
+    
+    
+    
+    
+    
     
 var nodeScale = d3.scale.linear()
 	.range([360 / nflNodesNum  , 360])
@@ -236,6 +287,7 @@ function updateData(){
 	handData[0].value = (t.getHours() % 12) + t.getMinutes()/60 ;
 	handData[1].value = t.getMinutes();
 	handData[2].value = t.getSeconds();
+    nflNodeFocus = 1
 }
 
 drawClock();
