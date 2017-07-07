@@ -11,291 +11,60 @@ svg{
 	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
 }
 
-#rim {
-  fill: none;
-  stroke: #999;
-  stroke-width: 3px;
-}
-
-.second-hand{
-	stroke-width:3;
-
-}
-
-.minute-hand{
-	stroke-width:8;
-	stroke-linecap:round;
-}
-
-.hour-hand{
-	stroke-width:12;
-	stroke-linecap:round;
-}
-
-.hands-cover{
-	stroke-width:3;
-	fill:#fff;
-}
-
-.second-tick{
-	stroke-width:3;
-	fill:#240;	
-}
-
-.nfl-tick{
-	stroke-width:3;
-	fill:#000;	
-}
-    
-.nfl-node{
-	stroke-width:3;
-	fill: none;	
-}   
-
-.hour-tick{
-	stroke-width:8; //same as the miute hand
-}
-
-.second-label{
-	font-size: 12px;
-}
-
-.hour-label{
-	font-size: 24px;
-}
-
-
 </style>
 <body>
 <script src="js/d3.v3.min.js"></script>
 <script>
-
-
     
 var width = 1600,
-    height = 800;
+    height = 800,
+    margin = 20,
+    nflGraphOriginX = width/2,
+    nflGraphOriginY = height/2;
     
-var nflRadius = 400,
+var nflRadius = 350,
     nflNodesNum = 32;
-  
-
-for(var i=0; i<nflNodesNum; i++) {
-    nflNodeSegmentWidth = 2 * Math.PI / nflNodesNum,
-    nflNodesId = d3.range(0, nflNodesNum),
-    nflNodesRadians = [],    
-    nflNodesX = [],    
-    nflNodesY = []; 
-    nflNodesRadians[i] = nflNodesId[i] * nflNodeSegmentWidth;
-    nflNodesX[i] = Math.cos(nflNodesRadians[i]);
-    nflNodesY[i] = Math.sin(nflNodesRadians[i]);
-}       
     
-var nflNodes = [nflNodesId, nflNodesRadians, nflNodesX, nflNodesY]  
-
-var svg = d3.select("body").append("svg")
-	    .attr("width", width)
-	    .attr("height", height);
+var nflNodeScale = d3.scale.linear()
+	.range([margin / nflNodesNum  , 360])
+	.domain([0, nflNodesNum-1]);
     
-var nflGraph = svg.append('g')
+var nflNodeSegmentWidth = 2 * Math.PI / nflNodesNum;
+    nflNodeIndex = d3.range(0, nflNodesNum),
+    nflNodes = nflNodeIndex;
+
+function drawNflGraph(){ //create all the NFL team nodes
+	var svg = d3.select('body').append('svg')
+	    .attr('width', width)
+	    .attr('height', height);
+
+	var nflGraph = svg.append('g')
 		.attr('id','nfl-graph')
 
-    
-    
-    
-    
-   
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-var radians = 0.0174532925, 
-	clockRadius = 300,
-	margin = 50,
-	width = 1600,
-    height = 800,
-    hourHandLength = 2*clockRadius/3,
-    minuteHandLength = clockRadius,
-    secondHandLength = clockRadius-12,
-    secondHandBalance = 30,
-    secondTickStart = clockRadius;
-    secondTickLength = -10,
-    hourTickStart = clockRadius,
-    hourTickLength = -18
-    secondLabelRadius = clockRadius + 16;
-    secondLabelYOffset = 5
-    hourLabelRadius = clockRadius - 40
-    hourLabelYOffset = 7;
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-var nodeScale = d3.scale.linear()
-	.range([360 / nflNodesNum  , 360])
-	.domain([0, nflNodesNum-1]);
-
-
-
-var hourScale = d3.scale.linear()
-	.range([0,330])
-	.domain([0,11]);
-
-var minuteScale = secondScale = d3.scale.linear()
-	.range([0,354])
-	.domain([0,59]);
-
-var handData = [
-	{
-		type:'hour',
-		value:0,
-		length:-hourHandLength,
-		scale:hourScale
-	},
-	{
-		type:'minute',
-		value:0,
-		length:-minuteHandLength,
-		scale:minuteScale
-	},
-	{
-		type:'second',
-		value:0,
-		length:-secondHandLength,
-		scale:secondScale,
-		balance:secondHandBalance
-	}
-];
-
-function drawClock(){ //create all the clock elements
-	updateData();	//draw them in the correct starting position
-	var svg = d3.select("body").append("svg")
-	    .attr("width", width)
-	    .attr("height", height);
-
-	var face = svg.append('g')
-		.attr('id','clock-face')
-		.attr('transform','translate(' + (clockRadius + margin) + ',' + (clockRadius + margin) + ')');
-
-
-    
-    
-    face.selectAll('.nfl-node')
-		.data(d3.range(1,nflNodesNum+1)).enter()
-			.append('circle')
-			.attr('class', 'nfl-node')
-			.attr('cx',0)
-			.attr('cy',0)
-			.attr('r', 25)
-			//.attr('transform',function(d){
-			//	return 'rotate(' + nodeScale(d) + ')';
-			//})
-            ;
-    
-  face.selectAll('.nfl-label')
-		.data(d3.range(1,nflNodesNum+1)).enter()
-			.append('text')
-			.attr('class', 'nfl-label')
-			.attr('text-anchor','middle')
-			.attr('x',0)
-			.attr('y',200)
-			.attr('text-size',0)
-			.attr('transform',function(d){
-				return 'rotate(' + nodeScale(d) + ')';
-			})
-			.text(function(d){
-				return 'N'+d;
-			});
-
-    
-    
+    var nflNode = nflGraph.selectAll('nfl-node')
+		  .data(nflNodes).enter()
+			.append('g')
+                .attr('id','nfl-node')
+                .attr('index',function (d) {return d})
+                .attr('radians',function (d) {return d * nflNodeSegmentWidth})
+                .attr('x',function (d) {return Math.cos(d)})
+                .attr('y',function (d) {return Math.sin(d)})
+            
+                .append('circle')
+                    .attr('id','shape')
+                    .attr('cx', function(d) {return d3.select(this.parentNode).attr('x');})
+                    .attr('cy',function (d) {return Math.sin(d)})
+                    .attr('r',25);
 
 
 
 
-
-	var hands = face.append('g').attr('id','clock-hands');
-
-	face.append('g').attr('id','face-overlay')
-		.append('circle').attr('class','hands-cover')
-			.attr('x',0)
-			.attr('y',355)
-			.attr('r',clockRadius/20);
-
-	hands.selectAll('line')
-		.data(handData)
-			.enter()
-			.append('line')
-			.attr('class', function(d){
-				return d.type + '-hand';
-			})
-			.attr('x1',0)
-			.attr('y1',function(d){
-				return d.balance ? d.balance : 0;
-			})
-			.attr('x2',0)
-			.attr('y2',function(d){
-				return d.length;
-			})
-			.attr('transform',function(d){
-				return 'rotate('+ d.scale(d.value) +')';
-			});
 }
 
-function moveHands(){
-	d3.select('#clock-hands').selectAll('line')
-	.data(handData)
-		.transition()
-		.attr('transform',function(d){
-			return 'rotate('+ d.scale(d.value) +')';
-		});
-}
 
-function updateData(){
-	var t = new Date();
-	handData[0].value = (t.getHours() % 12) + t.getMinutes()/60 ;
-	handData[1].value = t.getMinutes();
-	handData[2].value = t.getSeconds();
-    nflNodeFocus = 1
-}
-
-drawClock();
-
-setInterval(function(){
-	updateData();
-	moveHands();
-}, 1000);
-
-d3.select(self.frameElement).style("height", height + "px");
-</script>
+    
+drawNflGraph();    
+    
+ </script>   
+    
+    
