@@ -39,7 +39,9 @@ var width = 1000,
     height = 800,
     margin = 20,
     nflGraphOriginX = width/2,
-    nflGraphOriginY = height/2;
+    nflGraphOriginY = height/2,
+    nflCounter = 0,
+    nflCounterInterval = 30;
     
 var nflRadius = 350,
     nflNodesNum = 32;
@@ -91,33 +93,43 @@ function drawNflGraph(){ //create all the NFL team nodes
             .attr("dominant-baseline", "central")
 
     
+
+}
+
+
+
+function incrementCounter(){
+nflCounter = (nflCounter + 1) ;
+}
+
+function incrementInnerFocus(){
+d3.selectAll("#nfl-graph")
+     .selectAll("#nfl-node")
+     .attr('innerfocus',false)
+    ;
+
+
  d3.selectAll("#nfl-graph")
      .selectAll("#nfl-node")
-     .filter(function(d){ return d < 5; })
-     .attr('outerfocus',true)
-
-}
-
-
-    
-    
-function incrementInnerFocus(){
-	d3.select('nflNode').selectAll('line')
-	.data(handData)
-		.transition()
-		.attr('transform',function(d){
-			return 'rotate('+ d.scale(d.value) +')';
-		});
-}
-    
-function incrementOuterFocus(){
-	d3.select('#clock-hands').selectAll('line')
-	.data(handData)
-		.transition()
-		.attr('transform',function(d){
-			return 'rotate('+ d.scale(d.value) +')';
-		});
+     .filter(function(d){ return d == Math.floor(nflCounter / nflNodesNum) % nflNodesNum; })
+     .attr('innerfocus',true)
+    ;
 } 
+
+function incrementOuterFocus(){
+ d3.selectAll("#nfl-graph")
+     .selectAll("#nfl-node")
+     .attr('outerfocus',false)
+    ;
+
+
+ d3.selectAll("#nfl-graph")
+     .selectAll("#nfl-node")
+     .filter(function(d){ return d == nflCounter % nflNodesNum; })
+     .attr('outerfocus',true)
+    ;
+}
+    
 
 function animateTransfers(){
 	d3.select('#clock-hands').selectAll('line')
@@ -127,14 +139,18 @@ function animateTransfers(){
 			return 'rotate('+ d.scale(d.value) +')';
 		});
 }
+    
+
+
 
 drawNflGraph(); 
     
 setInterval(function(){
+    incrementCounter();
 	incrementInnerFocus();
 	incrementOuterFocus();
-	animateTransfers();
-}, 1000);
+//	animateTransfers();
+}, nflCounterInterval);
 
    
     
