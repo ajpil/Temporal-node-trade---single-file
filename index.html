@@ -6,17 +6,36 @@ body {
   background: #fff;
 }
 
-svg{
+svg {
 	stroke: #000;
 	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
 }
+
+#nfl-node {
+	fill: #000;
+	stroke: #fff;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+}
+    
+#nfl-node[innerfocus=true]{
+	fill: #F00;
+	stroke: #fff;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+}
+    
+#nfl-node[outerfocus=true]{
+	fill: #00F;
+	stroke: #fff;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+}
+
 
 </style>
 <body>
 <script src="js/d3.v3.min.js"></script>
 <script>
     
-var width = 1600,
+var width = 1000,
     height = 800,
     margin = 20,
     nflGraphOriginX = width/2,
@@ -29,14 +48,16 @@ var nflNodeScale = d3.scale.linear()
 	.range([margin / nflNodesNum  , 360])
 	.domain([0, nflNodesNum-1]);
     
-var nflNodeSegmentWidth = 2 * Math.PI / nflNodesNum;
+var nflNodeSegmentWidth = (2 * Math.PI / nflNodesNum);
     nflNodeIndex = d3.range(0, nflNodesNum),
     nflNodes = nflNodeIndex;
 
 function drawNflGraph(){ //create all the NFL team nodes
 	var svg = d3.select('body').append('svg')
 	    .attr('width', width)
-	    .attr('height', height);
+	    .attr('height', height)
+        .attr('viewBox',  '-' + width/2 + ' -' + height/2 + ' ' + width + ' ' + height)
+;
 
 	var nflGraph = svg.append('g')
 		.attr('id','nfl-graph')
@@ -45,25 +66,77 @@ function drawNflGraph(){ //create all the NFL team nodes
 		  .data(nflNodes).enter()
 			.append('g')
                 .attr('id','nfl-node')
+                .attr('innerfocus',false)
+                .attr('outerfocus',false)
                 .attr('index',function (d) {return d})
                 .attr('radians',function (d) {return d * nflNodeSegmentWidth})
-                .attr('x',function (d) {return Math.cos(d)})
-                .attr('y',function (d) {return Math.sin(d)})
+                .attr('x',function(d) {return nflRadius * Math.cos(d * nflNodeSegmentWidth)})
+                .attr('y',function(d) {return nflRadius * Math.sin(d * nflNodeSegmentWidth)});
             
-                .append('circle')
-                    .attr('id','shape')
-                    .attr('cx', function(d) {return d3.select(this.parentNode).attr('x');})
-                    .attr('cy',function (d) {return Math.sin(d)})
-                    .attr('r',25);
+        nflNode.append('circle')
+            .attr('id','shape')
+            .attr('cx', function(d) {return d3.select(this.parentNode).attr('x');})
+            .attr('cy', function(d) {return d3.select(this.parentNode).attr('y');})
+            .attr('r',25);
+     
+        nflNode.append('text')
+            .text(function(d) {return 'NFL' + d3.select(this.parentNode).attr('index');})
+            .attr('id','label')
+            .attr('font-size', 15)
+            .attr('fill', 'white')
+            .attr('stroke', 'white')
+            .attr('x', function(d) {return d3.select(this.parentNode).attr('x');})
+            .attr('y', function(d) {return d3.select(this.parentNode).attr('y');})
+            .attr("text-anchor", "middle") // set anchor y justification
+            .attr("dominant-baseline", "central")
 
-
-
+    
+ d3.selectAll("#nfl-graph")
+     .selectAll("#nfl-node")
+     .filter(function(d){ return d < 5; })
+     .attr('outerfocus',true)
 
 }
 
 
     
-drawNflGraph();    
+    
+function incrementInnerFocus(){
+	d3.select('nflNode').selectAll('line')
+	.data(handData)
+		.transition()
+		.attr('transform',function(d){
+			return 'rotate('+ d.scale(d.value) +')';
+		});
+}
+    
+function incrementOuterFocus(){
+	d3.select('#clock-hands').selectAll('line')
+	.data(handData)
+		.transition()
+		.attr('transform',function(d){
+			return 'rotate('+ d.scale(d.value) +')';
+		});
+} 
+
+function animateTransfers(){
+	d3.select('#clock-hands').selectAll('line')
+	.data(handData)
+		.transition()
+		.attr('transform',function(d){
+			return 'rotate('+ d.scale(d.value) +')';
+		});
+}
+
+drawNflGraph(); 
+    
+setInterval(function(){
+	incrementInnerFocus();
+	incrementOuterFocus();
+	animateTransfers();
+}, 1000);
+
+   
     
  </script>   
     
