@@ -33,6 +33,8 @@ svg {
 </style>
 <body>
 <script src="js/d3.v3.min.js"></script>
+<script src="js/d3-array.v1.min.js"></script>
+    
 <script>
     
 var width = 1000,
@@ -41,18 +43,34 @@ var width = 1000,
     nflGraphOriginX = width/2,
     nflGraphOriginY = height/2,
     nflCounter = 0,
-    nflCounterInterval = 30;
+    nflFocustInterval = 20,
+    nflTransitionInterval = 1000
+;
     
 var nflRadius = 350,
-    nflNodesNum = 32;
+    nflNodesNum = 32
+    ;
     
 var nflNodeScale = d3.scale.linear()
 	.range([margin / nflNodesNum  , 360])
 	.domain([0, nflNodesNum-1]);
     
-var nflNodeSegmentWidth = (2 * Math.PI / nflNodesNum);
+var nflNodeSegmentWidth = (2 * Math.PI / nflNodesNum),
     nflNodeIndex = d3.range(0, nflNodesNum),
     nflNodes = nflNodeIndex;
+    
+// Generate node combinations    
+var nflNodeCombos = []; //d3.cross(nflNodeIndex, nflNodeIndex) 
+for (var i = 0; i < nflNodesNum; i++) {
+    for (var j = 0; j < nflNodesNum; j++) {
+        nflNodeCombos.push([i, (i+j) % nflNodesNum])
+    };
+};
+    
+        //Remove self matches (e.g. [Node1, Node1]);
+    
+nflNodeCombos = nflNodeCombos
+             .filter(function(d){ return d[0] != d[1] });
 
 function drawNflGraph(){ //create all the NFL team nodes
 	var svg = d3.select('body').append('svg')
@@ -90,44 +108,67 @@ function drawNflGraph(){ //create all the NFL team nodes
             .attr('x', function(d) {return d3.select(this.parentNode).attr('x');})
             .attr('y', function(d) {return d3.select(this.parentNode).attr('y');})
             .attr("text-anchor", "middle") // set anchor y justification
-            .attr("dominant-baseline", "central")
+            .attr("dominant-baseline", "central");
+
+
+
+}
+ 
+
+
+function incrementNflCounter(){ nflCounter = (nflCounter + 1 ) % nflNodeCombos.length}
+    
+function incrementInnerFocus(){
+    
+ d3.selectAll("#nfl-graph")
+    .selectAll("#nfl-node")
+    .attr('innerfocus',false)
+                .attr('x',function(d) {return nflRadius * Math.cos(d * nflNodeSegmentWidth)})
+                .attr('y',function(d) {return nflRadius * Math.sin(d * nflNodeSegmentWidth)});
+    ;
 
     
-
-}
-
-
-
-function incrementCounter(){
-nflCounter = (nflCounter + 1) ;
-}
-
-function incrementInnerFocus(){
 d3.selectAll("#nfl-graph")
      .selectAll("#nfl-node")
-     .attr('innerfocus',false)
-    ;
-
-
- d3.selectAll("#nfl-graph")
-     .selectAll("#nfl-node")
-     .filter(function(d){ return d == Math.floor(nflCounter / nflNodesNum) % nflNodesNum; })
+     .filter(function(d){ return d == nflNodeCombos[nflCounter][0]; })
      .attr('innerfocus',true)
-    ;
+    .attr('x',0)
+    .attr('y',0)
+
+;
 } 
 
 function incrementOuterFocus(){
+
  d3.selectAll("#nfl-graph")
-     .selectAll("#nfl-node")
-     .attr('outerfocus',false)
+    .selectAll("#nfl-node")
+    .attr('outerfocus',false)
     ;
-
-
- d3.selectAll("#nfl-graph")
+    
+d3.selectAll("#nfl-graph")
      .selectAll("#nfl-node")
-     .filter(function(d){ return d == nflCounter % nflNodesNum; })
+     .filter(function(d){ return d == nflNodeCombos[nflCounter][1]; })
      .attr('outerfocus',true)
+;
+}
+    
+function  refreshNodeCoordinates(){
+d3.selectAll("#nfl-graph")
+    .selectAll("#nfl-node")
+    .selectAll("#shape")
+    .transition().duration(nflTransitionInterval).ease("elastic")
+    .attr('cx', function() {return d3.select(this.parentNode).attr('x');})
+    .attr('cy', function() {return d3.select(this.parentNode).attr('y');})
     ;
+
+d3.selectAll("#nfl-graph")
+    .selectAll("#nfl-node")
+    .selectAll("#label")
+    .transition().duration(nflTransitionInterval).ease("elastic")
+    .attr('x', function() {return d3.select(this.parentNode).attr('x');})//.transition()
+    .attr('y', function() {return d3.select(this.parentNode).attr('y');})//.transition()
+    ;
+
 }
     
 
@@ -140,20 +181,28 @@ function animateTransfers(){
 		});
 }
     
+function incrementOnClick(){
+	incrementInnerFocus();
+	incrementOuterFocus();
+    refreshNodeCoordinates();  
+    incrementNflCounter();
 
+}
 
 
 drawNflGraph(); 
     
+
+
+
+    
 setInterval(function(){
-    incrementCounter();
 	incrementInnerFocus();
 	incrementOuterFocus();
-//	animateTransfers();
-}, nflCounterInterval);
-
-   
+    refreshNodeCoordinates();  
+    incrementNflCounter();
+}, nflFocustInterval);
     
  </script>   
     
-    
+<button onclick="incrementOnClick()">Click me</button>  
