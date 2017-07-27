@@ -29,27 +29,24 @@ svg {
 	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
 }
 
-
 </style>
 <body>
 <script src="js/d3.v3.min.js"></script>
 <script src="js/d3-array.v1.min.js"></script>
     
-<script>
-    
+<script>   
 var width = 1000,
     height = 800,
     margin = 20,
     nflGraphOriginX = width/2,
     nflGraphOriginY = height/2,
     nflCounter = 0,
-    nflFocustInterval = 20,
-    nflTransitionInterval = 1000
-;
+    nflFocusInterval = 20,
+    nflTransitionInterval = 1000,
+    nflTransactionInterval = 1000;
     
 var nflRadius = 350,
-    nflNodesNum = 32
-    ;
+    nflNodesNum = 32;
     
 var nflNodeScale = d3.scale.linear()
 	.range([margin / nflNodesNum  , 360])
@@ -67,8 +64,7 @@ for (var i = 0; i < nflNodesNum; i++) {
     };
 };
     
-        //Remove self matches (e.g. [Node1, Node1]);
-    
+//Remove self matches (e.g. [Node1, Node1]);    
 nflNodeCombos = nflNodeCombos
              .filter(function(d){ return d[0] != d[1] });
 
@@ -109,47 +105,34 @@ function drawNflGraph(){ //create all the NFL team nodes
             .attr('y', function(d) {return d3.select(this.parentNode).attr('y');})
             .attr("text-anchor", "middle") // set anchor y justification
             .attr("dominant-baseline", "central");
-
-
-
 }
  
-
-
 function incrementNflCounter(){ nflCounter = (nflCounter + 1 ) % nflNodeCombos.length}
     
-function incrementInnerFocus(){
-    
+function incrementInnerFocus(){    
  d3.selectAll("#nfl-graph")
     .selectAll("#nfl-node")
     .attr('innerfocus',false)
                 .attr('x',function(d) {return nflRadius * Math.cos(d * nflNodeSegmentWidth)})
                 .attr('y',function(d) {return nflRadius * Math.sin(d * nflNodeSegmentWidth)});
-    ;
-
-    
+        
 d3.selectAll("#nfl-graph")
      .selectAll("#nfl-node")
      .filter(function(d){ return d == nflNodeCombos[nflCounter][0]; })
      .attr('innerfocus',true)
     .attr('x',0)
-    .attr('y',0)
-
-;
+    .attr('y',0);
 } 
 
 function incrementOuterFocus(){
-
  d3.selectAll("#nfl-graph")
     .selectAll("#nfl-node")
-    .attr('outerfocus',false)
-    ;
+    .attr('outerfocus',false);
     
 d3.selectAll("#nfl-graph")
      .selectAll("#nfl-node")
      .filter(function(d){ return d == nflNodeCombos[nflCounter][1]; })
-     .attr('outerfocus',true)
-;
+     .attr('outerfocus',true);
 }
     
 function  refreshNodeCoordinates(){
@@ -158,27 +141,19 @@ d3.selectAll("#nfl-graph")
     .selectAll("#shape")
     .transition().duration(nflTransitionInterval).ease("elastic")
     .attr('cx', function() {return d3.select(this.parentNode).attr('x');})
-    .attr('cy', function() {return d3.select(this.parentNode).attr('y');})
-    ;
+    .attr('cy', function() {return d3.select(this.parentNode).attr('y');});
 
 d3.selectAll("#nfl-graph")
     .selectAll("#nfl-node")
     .selectAll("#label")
     .transition().duration(nflTransitionInterval).ease("elastic")
     .attr('x', function() {return d3.select(this.parentNode).attr('x');})//.transition()
-    .attr('y', function() {return d3.select(this.parentNode).attr('y');})//.transition()
-    ;
-
+    .attr('y', function() {return d3.select(this.parentNode).attr('y');})//.transition();
 }
     
-
-function animateTransfers(){
-	d3.select('#clock-hands').selectAll('line')
-	.data(handData)
-		.transition()
-		.attr('transform',function(d){
-			return 'rotate('+ d.scale(d.value) +')';
-		});
+function animateTransactions(){
+    svg.append('g')
+		.attr('id','nfl-transaction')
 }
     
 function incrementOnClick(){
@@ -186,23 +161,23 @@ function incrementOnClick(){
 	incrementOuterFocus();
     refreshNodeCoordinates();  
     incrementNflCounter();
-
 }
 
-
 drawNflGraph(); 
-    
-
-
-
-    
+       
 setInterval(function(){
 	incrementInnerFocus();
 	incrementOuterFocus();
     refreshNodeCoordinates();  
     incrementNflCounter();
-}, nflFocustInterval);
+}, nflFocusInterval);
+
+// Animate transactions between inner and outer focus
+setInterval(function(){
+	animateTransactions
+}, nflTransactionInterval);
     
- </script>   
+ 
+</script>   
     
 <button onclick="incrementOnClick()">Click me</button>  
