@@ -43,7 +43,7 @@ var width = 1000,
     nflCounter = 0,
     nflFocusInterval = 20,
     nflTransitionInterval = 1000,
-    nflTransactionInterval = 250;
+    nflTransactionInterval = 1000;
     
 var nflRadius = 350,
     nflNodesNum = 15;
@@ -133,6 +133,8 @@ d3.selectAll("#nfl-graph")
      .selectAll("#nfl-node")
      .filter(function(d){ return d == nflNodeCombos[nflCounter][1]; })
      .attr('outerfocus',true);
+
+animateTransactions();
 }
     
 function  refreshNodeCoordinates(){
@@ -152,67 +154,39 @@ d3.selectAll("#nfl-graph")
 }
     
 function animateTransactionsIn(){
-
-var nflOuterFocus = d3.selectAll("#nfl-graph") //Can I make this global so it can be called in animateTransactionsOut()
-     .selectAll("#nfl-node")
-     .filter(function(d){ return d == nflNodeCombos[nflCounter][1]; })
-;
+var nflOuterFocus = d3.selectAll("#nfl-graph") .selectAll("#nfl-node").filter(function(d){ return d == nflNodeCombos[nflCounter][1]; });//Can I make this global so it can be called in animateTransactionsOut() 
+var nflInnerFocus = d3.selectAll("#nfl-graph").selectAll("#nfl-node").filter(function(d){ return d == nflNodeCombos[nflCounter][0]; });
     
-var nflInnerFocus = d3.selectAll("#nfl-graph")
-     .selectAll("#nfl-node")
-     .filter(function(d){ return d == nflNodeCombos[nflCounter][0]; })
-;
+var nflTransaction = nflInnerFocus.append('g').attr('id','nfl-transaction');
     
-    
-
-var nflTransaction = nflInnerFocus
-			.append('g')
-                .attr('id','nfl-transaction');
-    
-     nflTransaction.append('circle')
+nflTransaction.append('circle')
             .attr('id','in')
             .attr('cx', function() {return nflInnerFocus.attr('x');})
             .attr('cy', function() {return nflInnerFocus.attr('y');})
             .attr('r',10)
+            .attr('fill','#00F')
                 .transition().duration(nflTransactionInterval).ease("linear")
                 .attr('cx', function() {return nflOuterFocus.attr('x');})
                 .attr('cy', function() {return nflOuterFocus.attr('y');})
     .remove();
-    
-
-        
 }
 
 function animateTransactionsOut(){
-
-var nflOuterFocus = d3.selectAll("#nfl-graph")
-     .selectAll("#nfl-node")
-     .filter(function(d){ return d == nflNodeCombos[nflCounter][1]; })
-;
+var nflOuterFocus = d3.selectAll("#nfl-graph").selectAll("#nfl-node").filter(function(d){ return d == nflNodeCombos[nflCounter][1]; });
+var nflInnerFocus = d3.selectAll("#nfl-graph").selectAll("#nfl-node").filter(function(d){ return d == nflNodeCombos[nflCounter][0]; });
     
-var nflInnerFocus = d3.selectAll("#nfl-graph")
-     .selectAll("#nfl-node")
-     .filter(function(d){ return d == nflNodeCombos[nflCounter][0]; })
-;
-    
-
-
-    
-var nflTransaction = nflOuterFocus
-			.append('g')
-                .attr('id','nfl-transaction');
+var nflTransaction = nflOuterFocus.append('g').attr('id','nfl-transaction');
             
-
-    nflTransaction.append('circle')
+nflTransaction.append('circle')
             .attr('id','out')
             .attr('cx', function() {return nflOuterFocus.attr('x');})
             .attr('cy', function() {return nflOuterFocus.attr('y');})
             .attr('r',10)
+            .attr('fill','#F00')
                 .transition().duration(nflTransactionInterval).ease("linear")
                 .attr('cx', function() {return nflInnerFocus.attr('x');})
                 .attr('cy', function() {return nflInnerFocus.attr('y');})
-    .remove();
-        
+    .remove();       
 }
     
 function animateTransactions(){
@@ -225,47 +199,26 @@ setInterval(function(){
 }, 2000);
     
     
-function removeNflTransactions(){
 
-var nflTransaction = d3.selectAll("#nfl-graph")
-     .selectAll("#nfl-node")
-     .selectAll("#nfl-transaction");
-
-nflTransaction.transition()
-    .delay(1000)
-    .remove();
-        
-}
     
     
 function incrementOnClick(){
-	//incrementInnerFocus();
-	//incrementOuterFocus();
-   // animateTransactionsIn();
-    //animateTransactionsOut();
-    animateTransactions();
-   // removeNflTransactions();
-    refreshNodeCoordinates();  
+//    animateTransactions();
+    incrementNflCounter();
     incrementInnerFocus();
 	incrementOuterFocus();
-    incrementNflCounter();
-   // incrementInnerFocus();
-	// incrementOuterFocus();
+    refreshNodeCoordinates();  
+
 }
 
 drawNflGraph(); 
        
 //setInterval(function(){
-	incrementInnerFocus();
-	incrementOuterFocus();
-   // animateTransactionsIn();
- //   animateTransactionsOut();
-    animateTransactionsOut();
-   // removeNflTransactions();
+//    animateTransactions();
     refreshNodeCoordinates();  
     incrementNflCounter();
-   // incrementInnerFocus();
-	// incrementOuterFocus();
+    incrementInnerFocus();
+	incrementOuterFocus();
 //}, nflTransactionInterval);
     
  
