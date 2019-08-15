@@ -37,7 +37,6 @@ svg {
 <script>
 var width = 1000,
     height = 800,
-<<<<<<< HEAD
     margin = 200,
     originX = width/2,
     originY = height/2,
@@ -62,32 +61,6 @@ var nodePairs = []; //d3.cross(nodeIndex, nodeIndex)
 for (var i = 0; i < nodesNum; i++) {
     for (var j = 0; j < nodesNum; j++) {
         nodePairs.push([i, (i+j) % nodesNum])
-=======
-    margin = 20,
-    nflGraphOriginX = width/2,
-    nflGraphOriginY = height/2,
-    nflCounter = 0,
-    nflFocusInterval = 20,
-    nflTransitionInterval = 1000,
-    nflTransactionInterval = 1000;
-    
-var nflRadius = 350,
-    nflNodesNum = 15;
-    
-var nflNodeScale = d3.scale.linear()
-	.range([margin / nflNodesNum  , 360])
-	.domain([0, nflNodesNum-1]);
-    
-var nflNodeSegmentWidth = (2 * Math.PI / nflNodesNum),
-    nflNodeIndex = d3.range(0, nflNodesNum),
-    nflNodes = nflNodeIndex;
-    
-// Generate node combinations    
-var nflNodeCombos = []; //d3.cross(nflNodeIndex, nflNodeIndex) 
-for (var i = 0; i < nflNodesNum; i++) {
-    for (var j = 0; j < nflNodesNum; j++) {
-        nflNodeCombos.push([i, (i+j) % nflNodesNum])
->>>>>>> origin/master
     };
 };
 
@@ -160,8 +133,6 @@ d3.selectAll("#graph")
      .selectAll("#node")
      .filter(function(d){ return d == nodePairs[counter][1]; })
      .attr('outerfocus',true);
-
-animateTransactions();
 }
 
 function  refreshNodeCoordinates(){
@@ -181,7 +152,6 @@ d3.selectAll("#graph")
 }
 
 function animateTransactionsIn(){
-<<<<<<< HEAD
 
 var outerFocus = d3.selectAll("#graph") //Can I make this global so it can be called in animateTransactionsOut()
      .selectAll("#node")
@@ -200,19 +170,10 @@ var transaction = innerFocus
                 .attr('id','transaction');
 
      transaction.append('circle')
-=======
-var nflOuterFocus = d3.selectAll("#nfl-graph") .selectAll("#nfl-node").filter(function(d){ return d == nflNodeCombos[nflCounter][1]; });//Can I make this global so it can be called in animateTransactionsOut() 
-var nflInnerFocus = d3.selectAll("#nfl-graph").selectAll("#nfl-node").filter(function(d){ return d == nflNodeCombos[nflCounter][0]; });
-    
-var nflTransaction = nflInnerFocus.append('g').attr('id','nfl-transaction');
-    
-nflTransaction.append('circle')
->>>>>>> origin/master
             .attr('id','in')
             .attr('cx', function() {return innerFocus.attr('x');})
             .attr('cy', function() {return innerFocus.attr('y');})
             .attr('r',10)
-<<<<<<< HEAD
                 .transition().duration(transactionInterval).ease("linear")
                 .attr('cx', function() {return outerFocus.attr('x');})
                 .attr('cy', function() {return outerFocus.attr('y');})
@@ -243,39 +204,15 @@ var transaction = outerFocus
 
 
     transaction.append('circle')
-=======
-            .attr('fill','#00F')
-                .transition().duration(nflTransactionInterval).ease("linear")
-                .attr('cx', function() {return nflOuterFocus.attr('x');})
-                .attr('cy', function() {return nflOuterFocus.attr('y');})
-    .remove();
-}
-
-function animateTransactionsOut(){
-var nflOuterFocus = d3.selectAll("#nfl-graph").selectAll("#nfl-node").filter(function(d){ return d == nflNodeCombos[nflCounter][1]; });
-var nflInnerFocus = d3.selectAll("#nfl-graph").selectAll("#nfl-node").filter(function(d){ return d == nflNodeCombos[nflCounter][0]; });
-    
-var nflTransaction = nflOuterFocus.append('g').attr('id','nfl-transaction');
-            
-nflTransaction.append('circle')
->>>>>>> origin/master
             .attr('id','out')
             .attr('cx', function() {return outerFocus.attr('x');})
             .attr('cy', function() {return outerFocus.attr('y');})
             .attr('r',10)
-<<<<<<< HEAD
                 .transition().duration(transactionInterval).ease("linear")
                 .attr('cx', function() {return innerFocus.attr('x');})
                 .attr('cy', function() {return innerFocus.attr('y');})
     .remove();
 
-=======
-            .attr('fill','#F00')
-                .transition().duration(nflTransactionInterval).ease("linear")
-                .attr('cx', function() {return nflInnerFocus.attr('x');})
-                .attr('cy', function() {return nflInnerFocus.attr('y');})
-    .remove();       
->>>>>>> origin/master
 }
 
 function animateTransactions(){
@@ -286,7 +223,6 @@ function animateTransactions(){
 setInterval(function(){
 	animateTransactions();
 }, 2000);
-<<<<<<< HEAD
 
 
 function removetransactions(){
@@ -315,26 +251,11 @@ function incrementOnClick(){
     incrementcounter();
    // incrementInnerFocus();
 	// incrementOuterFocus();
-=======
-    
-    
-
-    
-    
-function incrementOnClick(){
-//    animateTransactions();
-    incrementNflCounter();
-    incrementInnerFocus();
-	incrementOuterFocus();
-    refreshNodeCoordinates();  
-
->>>>>>> origin/master
 }
 
 drawGraph();
 
 //setInterval(function(){
-<<<<<<< HEAD
 	incrementInnerFocus();
 	incrementOuterFocus();
    // animateTransactionsIn();
@@ -352,20 +273,3 @@ drawGraph();
 
 <button onclick="incrementOnClick()">Increment nodes</button>
 <button onclick="animateTransactions()">Animate transactions </button>
-=======
-//    animateTransactions();
-    refreshNodeCoordinates();  
-    incrementNflCounter();
-    incrementInnerFocus();
-	incrementOuterFocus();
-//}, nflTransactionInterval);
-    
- 
-</script>   
-    
-<button onclick="incrementOnClick()">Increment nodes</button>  
-<button onclick="animateTransactions()">Animate transactions </button>  
-<button onclick="s()">Send pulse </button>  
-<button onclick="s()">Cut animation </button>  
-    
->>>>>>> origin/master
